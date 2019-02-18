@@ -107,7 +107,7 @@ func (s *Script) tick() {
 }
 
 func (s *Script) getGtag() error {
-	res, err := http.Get(gtagURL)
+	res, err := http.Get(gtagURL + "/gtag/js")
 	if err != nil {
 		return fmt.Errorf("http get: %v", err)
 	}
