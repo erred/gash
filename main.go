@@ -31,6 +31,7 @@ func main() {
 
 	http.Handle("/js", gtag)
 	http.Handle("/analytics.js", analytics)
+	http.Handle("/collect/analytics.js", analytics)
 	http.HandleFunc("/collect", collector)
 
 	http.ListenAndServe(":"+*p, nil)
