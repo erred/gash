@@ -18,7 +18,7 @@ import (
 var (
 	gtagURL = "https://www.googletagmanager.com/gtag/js"
 	gaURL   = "https://www.google-analytics.com/"
-	prURL   = "https://gash.seankhliao.com/collect/"
+	prURL   = "https://gash.seankhliao.com/"
 )
 
 func main() {
@@ -34,7 +34,6 @@ func main() {
 		log.Fatal("create ReverseProxy: ", err)
 	}
 
-	http.Handle("/collect", http.StripPrefix("/collect", shrp))
 	http.HandleFunc("/js", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/js" {
 			http.Redirect(w, r, "/js", http.StatusFound)
@@ -44,6 +43,7 @@ func main() {
 		w.Header().Add("Cache-Control", "max-age="+strconv.Itoa(int(s.d.Seconds())))
 		w.Write(s.b)
 	})
+	http.Handle("/", shrp)
 
 	http.ListenAndServe(":"+*p, nil)
 }
