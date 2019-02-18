@@ -18,7 +18,7 @@ import (
 var (
 	gtagURL = "https://www.googletagmanager.com/gtag/js"
 	gaURL   = "https://www.google-analytics.com/"
-	prURL   = "https://gash.seankhliao.com/collect"
+	prURL   = "https://gash.seankhliao.com/collect/"
 )
 
 func main() {
