@@ -29,8 +29,8 @@ func main() {
 	analytics := NewScript(gaURL)
 	go analytics.update(*t)
 
-	http.HandleFunc("/js", gtag)
-	http.HandleFunc("/analytics.js", analytics)
+	http.Handle("/js", gtag)
+	http.Handle("/analytics.js", analytics)
 	http.HandleFunc("/collect", collector)
 
 	http.ListenAndServe(":"+*p, nil)
