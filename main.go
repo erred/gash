@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -16,20 +15,24 @@ import (
 )
 
 var (
-	gtagURL = "https://www.googletagmanager.com/gtag/js"
+	gtagURL = "https://www.googletagmanager.com/"
+	ptagURL = "https://gash.seankhliao.com/gtag/"
 	gaURL   = "https://www.google-analytics.com/"
-	prURL   = "https://gash.seankhliao.com/"
+	paURL   = "https://gash.seankhliao.com/ga/"
 )
 
 func main() {
-	pURL := flag.String("purl", prURL, "proxy url to collect reports at")
 	t := flag.Duration("t", 48*time.Hour, "update frequency of js, also used for cache age")
 	p := flag.String("p", "8080", "port to serve on")
 
-	s := NewScript(*t, *pURL)
+	s := NewScript(*t)
 	go s.tick()
 
-	shrp, err := NewReverseProxy(gaURL)
+	garp, err := NewReverseProxy(gaURL)
+	if err != nil {
+		log.Fatal("create ReverseProxy: ", err)
+	}
+	gtagrp, err := NewReverseProxy(gtagURL)
 	if err != nil {
 		log.Fatal("create ReverseProxy: ", err)
 	}
@@ -43,7 +46,8 @@ func main() {
 		w.Header().Add("Cache-Control", "max-age="+strconv.Itoa(int(s.d.Seconds())))
 		w.Write(s.b)
 	})
-	http.Handle("/", shrp)
+	http.Handle("/gtag", http.StripPrefix("/gtag", gtagrp))
+	http.Handle("/ga", http.StripPrefix("/ga", garp))
 
 	http.ListenAndServe(":"+*p, nil)
 }
@@ -80,14 +84,12 @@ func NewReverseProxy(target string) (*httputil.ReverseProxy, error) {
 
 type Script struct {
 	d time.Duration // update
-	p []byte        // proxy host
 	b []byte        // script bytes
 }
 
-func NewScript(d time.Duration, p string) *Script {
+func NewScript(d time.Duration) *Script {
 	return &Script{
 		d: d,
-		p: []byte(p),
 	}
 }
 
@@ -117,6 +119,6 @@ func (s *Script) getGtag() error {
 	if res.StatusCode < 200 || res.StatusCode >= 300 {
 		return fmt.Errorf("status: %v", err)
 	}
-	s.b = bytes.Replace(b, []byte(gaURL), s.p, -1)
+	s.b = []byte(strings.NewReplacer(gaURL, paURL, gtagURL, ptagURL).Replace(string(b)))
 	return nil
 }
