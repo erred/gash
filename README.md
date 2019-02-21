@@ -1,35 +1,15 @@
 # gash
 
-[![Build](https://img.shields.io/badge/endpoint.svg?url=https://badger.seankhliao.com/r/github_seankhliao_gash)](https://console.cloud.google.com/cloud-build/builds?project=com-seankhliao&query=source.repo_source.repo_name%20%3D%20%22github_seankhliao_gash%22)
-[![License](https://img.shields.io/github/license/seankhliao/gash.svg?style=for-the-badge)](LICENSE)
-
 Google Analytics, Self Hosted
 
-## What
+[![License](https://img.shields.io/github/license/seankhliao/gash.svg?style=for-the-badge&maxAge=31536000)](LICENSE)
+[![Build](https://badger.seankhliao.com/i/github_seankhliao_gash)](https://badger.seankhliao.com/l/github_seankhliao_gash)
 
-Proxy Google Analytics through your own domain
+## About
 
-Note: must not allow cloudflare to cache query strings
+Proxy Google Analytics through your own domain / server
 
-## Use
-
-same as standard gtag script but replace the url
-
-```js
-    <script async src="https://gash.seankhliao.com/js"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag("js", new Date());
-
-      gtag("config", "UA-XXXXXXXXX-Y");
-```
-
-## What it Does
-
-1. Get the gtag sccript from: `https://https://www.googletagmanager.com/gtag/js`
+1. Get the gtag script from: `https://https://www.googletagmanager.com/gtag/js`
    a. Replace `https://www.google-analytics.com/` with `https://gash.seankhliao.com`
    b. Cache the script
 2. Get the analytics.js script from `https://www.google-analytics.com/analytics.js`
@@ -39,6 +19,56 @@ same as standard gtag script but replace the url
    a. add `uip=<true client ip address`
    b. forward to `https://www.google-analytics.com/collect`
 4. Periodically update the scripts
+
+## Usage
+
+#### Prerequisites
+
+- go
+
+or
+
+- docker
+
+#### Install
+
+go:
+
+```sh
+go get github.com/seankhliao/gash
+```
+
+#### Run
+
+```sh
+gash [-p 8080] [-t 48h]
+  -p port to serve on
+  -t update interval
+```
+
+docker:
+
+```sh
+docker run --rm \
+  -p 8080:8080 \
+  seankhliao/gash
+```
+
+#### Build
+
+go:
+
+```sh
+go build
+```
+
+docker:
+
+```sh
+docker build \
+  --network host \
+  ,
+```
 
 ## TODO
 
